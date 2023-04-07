@@ -5,7 +5,7 @@ import { Post } from './posts.schema';
 
 export type LikeDocument = HydratedDocument<Like>;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Like {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: User;

@@ -5,7 +5,7 @@ import { Post } from './posts.schema';
 
 export type CommentDocument = HydratedDocument<Comment>;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Comment {
   @Prop({ required: true })
   content: string;

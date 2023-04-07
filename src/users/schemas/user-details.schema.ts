@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { Post } from 'src/posts/schemas/posts.schema';
 import { User } from './users.schema';
 
 export type UserDetailsDocument = HydratedDocument<UserDetails>;
@@ -8,6 +9,12 @@ export type UserDetailsDocument = HydratedDocument<UserDetails>;
 export class UserDetails {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: User;
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Post' }] })
+  posts: Post[];
+
+  @Prop()
+  gender: string;
 
   @Prop()
   instagram: string;
