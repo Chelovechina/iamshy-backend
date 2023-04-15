@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Put,
   Post,
   Req,
   UploadedFile,
@@ -17,7 +18,7 @@ export class UsersController {
   constructor(private usersService: UsersService) { }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/pic')
+  @Put('/pic')
   @UseInterceptors(FileInterceptor('image'))
   updateProfilePic(
     @Req() req: any,

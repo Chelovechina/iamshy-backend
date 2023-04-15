@@ -53,6 +53,13 @@ export class AuthService {
 
   private async validateUser(authDto: AuthDto) {
     const user = await this.userService.getUserByEmail(authDto.email);
+
+    if (!user) {
+      throw new UnauthorizedException({
+        message: 'Некоректный email или пароль',
+      });
+    }
+
     const passwordEquals = await bcrypt.compare(
       authDto.password,
       user.password,
@@ -61,6 +68,7 @@ export class AuthService {
     if (user && passwordEquals) {
       return user;
     }
+
     throw new UnauthorizedException({
       message: 'Некоректный email или пароль',
     });

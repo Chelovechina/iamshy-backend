@@ -15,11 +15,7 @@ export class UsersService {
   ) { }
 
   async createUser(dto: CreateUserDto): Promise<User> {
-    const user = new this.userModel({
-      ...dto,
-      profilePic:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png',
-    });
+    const user = new this.userModel(dto);
 
     const userDetails = new this.userDetailsModel({
       userId: user._id,
