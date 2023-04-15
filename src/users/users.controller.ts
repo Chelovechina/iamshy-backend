@@ -1,15 +1,30 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { CreateUserDto } from './dto/create-user.dto';
+import { User } from './schemas/users.schema';
 import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) { }
 
-  @Post()
-  create(@Body() userDto: CreateUserDto) {
-    return this.usersService.createUser(userDto);
+  @UseGuards(JwtAuthGuard)
+  @Post('/pic')
+  @UseInterceptors(FileInterceptor('image'))
+  updateProfilePic(
+    @Req() req: any,
+    @UploadedFile() image: Express.Multer.File,
+  ): Promise<User> {
+    const userId = req.user.id;
+    return this.usersService.updateProfilePic(userId, image);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -1,16 +1,39 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { FilesService } from 'src/files/files.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UserDetails } from './schemas/user-details.schema';
 import { User } from './schemas/users.schema';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) { }
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(UserDetails.name) private userDetailsModel: Model<UserDetails>,
+    private fileService: FilesService,
+  ) { }
 
   async createUser(dto: CreateUserDto): Promise<User> {
-    const user = new this.userModel(dto);
-    return user.save();
+    const user = new this.userModel({
+      ...dto,
+      profilePic:
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png',
+    });
+
+    const userDetails = new this.userDetailsModel({
+      userId: user._id,
+    });
+
+    await user.save();
+
+    const updatedUser = await this.userModel.findOneAndUpdate(
+      { _id: user._id },
+      { detailsId: userDetails._id },
+    );
+    updatedUser.save();
+
+    return this.userModel.findById(updatedUser._id);
   }
 
   async getAllUsers(): Promise<User[]> {
@@ -20,5 +43,16 @@ export class UsersService {
   async getUserByEmail(email: string): Promise<User | null> {
     const user = this.userModel.findOne({ email: email });
     return user;
+  }
+
+  async updateProfilePic(userId: number, image: Express.Multer.File) {
+    const fileName = await this.fileService.createFile(image);
+    const updatedUser = await this.userModel.findOneAndUpdate(
+      { _id: userId },
+      { profilePic: fileName },
+    );
+    updatedUser.save();
+
+    return this.userModel.findById(updatedUser._id);
   }
 }
