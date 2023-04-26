@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { FilesService } from 'src/files/files.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateProfilePicDto } from './dto/update-profile-pic.dto';
 import { UserDetails } from './schemas/user-details.schema';
 import { User } from './schemas/users.schema';
 
@@ -41,10 +42,10 @@ export class UsersService {
     return user;
   }
 
-  async updateProfilePic(userId: number, image: Express.Multer.File) {
-    const fileName = await this.fileService.createFile(image);
+  async updateProfilePic(dto: UpdateProfilePicDto): Promise<User> {
+    const fileName = await this.fileService.createFile(dto.image);
     const updatedUser = await this.userModel.findOneAndUpdate(
-      { _id: userId },
+      { _id: dto.userId },
       { profilePic: fileName },
     );
     updatedUser.save();

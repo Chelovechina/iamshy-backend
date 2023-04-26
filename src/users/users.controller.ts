@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Put,
-  Post,
   Req,
   UploadedFile,
   UseGuards,
@@ -25,7 +24,7 @@ export class UsersController {
     @UploadedFile() image: Express.Multer.File,
   ): Promise<User> {
     const userId = req.user.id;
-    return this.usersService.updateProfilePic(userId, image);
+    return this.usersService.updateProfilePic({ userId, image: image });
   }
 
   @UseGuards(JwtAuthGuard)
