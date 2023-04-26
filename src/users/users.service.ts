@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { FilesService } from 'src/files/files.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateProfilePicDto } from './dto/update-profile-pic.dto';
+import { Follow } from './schemas/follows.schema';
 import { UserDetails } from './schemas/user-details.schema';
 import { User } from './schemas/users.schema';
 
@@ -11,6 +12,7 @@ import { User } from './schemas/users.schema';
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Follow.name) private followModel: Model<Follow>,
     @InjectModel(UserDetails.name) private userDetailsModel: Model<UserDetails>,
     private fileService: FilesService,
   ) { }
@@ -28,7 +30,8 @@ export class UsersService {
       { _id: user._id },
       { detailsId: userDetails._id },
     );
-    updatedUser.save();
+
+    await updatedUser.save();
 
     return this.userModel.findById(updatedUser._id);
   }
@@ -51,5 +54,14 @@ export class UsersService {
     updatedUser.save();
 
     return this.userModel.findById(updatedUser._id);
+  }
+
+  async follow(followerId: string, followedId: string): Promise<Follow> {
+    const follow = new this.followModel({
+      followedId: followedId,
+      followerId: followerId,
+    });
+
+    return follow.save();
   }
 }

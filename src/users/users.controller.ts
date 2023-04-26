@@ -1,6 +1,8 @@
 import {
+  Body,
   Controller,
   Get,
+  Post,
   Put,
   Req,
   UploadedFile,
@@ -31,5 +33,12 @@ export class UsersController {
   @Get()
   getAll() {
     return this.usersService.getAllUsers();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('follow')
+  follow(@Req() req: any, @Body() data: { followedId: string }) {
+    const userId: string = req.user.id;
+    return this.usersService.follow(userId, data.followedId);
   }
 }
