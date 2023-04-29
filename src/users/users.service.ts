@@ -74,10 +74,21 @@ export class UsersService {
 
   async getFollowedUsers(userId: string): Promise<User[]> {
     const followedIds = await this.getFollowedIds(userId);
-    const followedUsers = await this.userModel.find({
-      _id: { $in: followedIds },
-    });
 
-    return followedUsers;
+    return this.userModel.find({ _id: { $in: followedIds } });
+  }
+
+  async getFollowerUsers(userId: string): Promise<User[]> {
+    const followers = await this.followModel
+      .find({ followedId: userId })
+      .exec();
+    const followerIds = followers.map((follow: Follow) => follow.followerId);
+
+    return this.userModel.find({ _id: { $in: followerIds } });
+  }
+
+  async suggestToFollow(userId: string): Promise<User[]> {
+    const followedIds = await this.getFollowedIds(userId);
+    return this.userModel.find({ _id: { $nin: followedIds } });
   }
 }

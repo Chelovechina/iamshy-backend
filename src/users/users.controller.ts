@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Put,
   Req,
@@ -43,9 +44,20 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('follow')
-  followedUsers(@Req() req: any) {
-    const userId: string = req.user.id;
+  @Get(':id/followed')
+  followedUsers(@Param('id') userId: string) {
     return this.usersService.getFollowedUsers(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/follower')
+  followerUsers(@Param('id') userId: string) {
+    return this.usersService.getFollowerUsers(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/suggest')
+  suggestToFollow(@Param('id') userId: string) {
+    return this.usersService.suggestToFollow(userId);
   }
 }
