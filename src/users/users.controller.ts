@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UpdateUserDetailsDto } from './dto/update-user-details.dto';
 import { User } from './schemas/users.schema';
 import { UsersService } from './users.service';
 
@@ -34,6 +35,14 @@ export class UsersController {
   @Get()
   getAll() {
     return this.usersService.getAllUsers();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put()
+  updateUserDetails(@Req() req: any, @Body() data: UpdateUserDetailsDto) {
+    const userId = req.user.id;
+    console.log(data, userId);
+    return this.usersService.updateUserDetails({ ...data, userId: userId });
   }
 
   @UseGuards(JwtAuthGuard)

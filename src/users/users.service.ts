@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { FilesService } from 'src/files/files.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateProfilePicDto } from './dto/update-profile-pic.dto';
+import { UpdateUserDetailsDto } from './dto/update-user-details.dto';
 import { Follow } from './schemas/follows.schema';
 import { UserDetails } from './schemas/user-details.schema';
 import { User } from './schemas/users.schema';
@@ -25,6 +26,7 @@ export class UsersService {
     });
 
     await user.save();
+    await userDetails.save();
 
     const updatedUser = await this.userModel.findOneAndUpdate(
       { _id: user._id },
@@ -34,6 +36,18 @@ export class UsersService {
     await updatedUser.save();
 
     return this.userModel.findById(updatedUser._id);
+  }
+
+  async updateUserDetails(dto: UpdateUserDetailsDto): Promise<UserDetails> {
+    const user = await this.userModel.findById(dto.userId);
+    const userDetails = await this.userDetailsModel.findOneAndUpdate(
+      { userId: user._id },
+      { ...dto },
+    );
+
+    await userDetails.save();
+
+    return this.userDetailsModel.findById(userDetails._id);
   }
 
   async getAllUsers(): Promise<User[]> {
