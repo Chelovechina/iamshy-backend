@@ -64,4 +64,20 @@ export class UsersService {
 
     return follow.save();
   }
+
+  async getFollowedIds(userId: string) {
+    const followed = await this.followModel.find({ followerId: userId }).exec();
+    const followedIds = followed.map((follow: Follow) => follow.followedId);
+
+    return followedIds;
+  }
+
+  async getFollowedUsers(userId: string): Promise<User[]> {
+    const followedIds = await this.getFollowedIds(userId);
+    const followedUsers = await this.userModel.find({
+      _id: { $in: followedIds },
+    });
+
+    return followedUsers;
+  }
 }

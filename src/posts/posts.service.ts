@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { FilesService } from 'src/files/files.service';
+import { UsersService } from 'src/users/users.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { CreateLikeDto } from './dto/create-like.dto';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -15,6 +16,7 @@ export class PostsService {
     @InjectModel(Post.name) private postModel: Model<Post>,
     @InjectModel(Comment.name) private commentModel: Model<Comment>,
     @InjectModel(Like.name) private likeModel: Model<Like>,
+    private userService: UsersService,
     private fileService: FilesService,
   ) { }
 
@@ -34,8 +36,9 @@ export class PostsService {
     return post.save();
   }
 
-  async getPosts(): Promise<Post[]> {
-    return this.postModel.find().exec();
+  async getPosts(userId: string): Promise<Post[]> {
+    const followedIds = await this.userService.getFollowedIds(userId);
+    return this.postModel.find({ userId: { $in: followedIds } }).exec();
   }
 
   async deletePost(postId: string, userId: string): Promise<Post> {

@@ -41,4 +41,11 @@ export class UsersController {
     const userId: string = req.user.id;
     return this.usersService.follow(userId, data.followedId);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('follow')
+  followedUsers(@Req() req: any) {
+    const userId: string = req.user.id;
+    return this.usersService.getFollowedUsers(userId);
+  }
 }

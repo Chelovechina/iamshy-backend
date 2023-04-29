@@ -7,6 +7,7 @@ import { Like, LikeSchema } from './schemas/likes.schema';
 import { Comment, CommentSchema } from './schemas/comments.schema';
 import { FilesModule } from 'src/files/files.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthModule } from 'src/auth/auth.module';
       { name: Comment.name, schema: CommentSchema },
     ]),
     AuthModule,
+    UsersModule,
     FilesModule,
   ],
   providers: [PostsService],

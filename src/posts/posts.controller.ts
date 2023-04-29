@@ -21,8 +21,9 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Get('')
-  getPosts() {
-    return this.postsService.getPosts();
+  getPosts(@Req() req: any) {
+    const userId = req.user.id;
+    return this.postsService.getPosts(userId);
   }
 
   @UseGuards(JwtAuthGuard)
