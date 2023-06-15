@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { FilesService } from 'src/files/files.service';
@@ -16,7 +17,20 @@ export class UsersService {
     @InjectModel(Follow.name) private followModel: Model<Follow>,
     @InjectModel(UserDetails.name) private userDetailsModel: Model<UserDetails>,
     private fileService: FilesService,
+    private jwtService: JwtService,
   ) { }
+
+  async toggleOnlineByToken(token: string) {
+    const payload = await this.jwtService.verifyAsync(token);
+    const user = await this.userModel.findById(payload.id).exec();
+
+    if (user) {
+      user.online = !user.online;
+      await user.save();
+
+      return user;
+    }
+  }
 
   async createUser(dto: CreateUserDto): Promise<User> {
     const user = new this.userModel(dto);
@@ -103,6 +117,9 @@ export class UsersService {
 
   async suggestToFollow(userId: string): Promise<User[]> {
     const followedIds = await this.getFollowedIds(userId);
-    return this.userModel.find({ _id: { $nin: followedIds } });
+    return this.userModel
+      .find({ _id: { $nin: followedIds } })
+      .limit(5)
+      .exec();
   }
 }

@@ -29,6 +29,9 @@ export class User {
 
   @Prop({ type: Types.ObjectId, ref: 'UserDetails' })
   detailsId: UserDetails;
+
+  @Prop()
+  online: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
